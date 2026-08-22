@@ -744,6 +744,32 @@ test_launch_cmd_container_image() {
     fi
 }
 
+# Test: Qwen3-ASR recipe applies the vllm-audio runtime mod
+test_qwen3_asr_audio_mod() {
+    log_test "qwen3-asr-1.7b applies mods/vllm-audio"
+
+    local recipe_file="$PROJECT_DIR/recipes/qwen3-asr-1.7b.yaml"
+    if [[ ! -f "$recipe_file" ]]; then
+        log_skip "qwen3-asr-1.7b.yaml not found"
+        return
+    fi
+
+    if ! recipe_has_mod "$recipe_file" "mods/vllm-audio"; then
+        log_fail "qwen3-asr-1.7b.yaml is missing mods/vllm-audio"
+        return
+    fi
+
+    output=$(run_recipe_dry_run "qwen3-asr-1.7b" "solo")
+    launch_cmd=$(extract_launch_cmd "$output")
+
+    if echo "$launch_cmd" | grep -q -- "--apply-mod mods/vllm-audio"; then
+        log_pass "qwen3-asr-1.7b dry-run applies mods/vllm-audio"
+    else
+        log_fail "qwen3-asr-1.7b dry-run missing --apply-mod mods/vllm-audio"
+        log_verbose "Launch cmd: $launch_cmd"
+    fi
+}
+
 # Test: Mods from recipe are passed as --apply-mod
 test_launch_cmd_mods() {
     log_test "Launch command includes --apply-mod for recipe mods"
@@ -1623,6 +1649,7 @@ main() {
     test_launch_cmd_solo_flag
     test_launch_cmd_nodes_flag
     test_launch_cmd_container_image
+    test_qwen3_asr_audio_mod
     test_launch_cmd_mods
     test_launch_cmd_cli_apply_mod_passthrough
     test_launch_cmd_cli_apply_vllm_pr_passthrough

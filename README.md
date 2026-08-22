@@ -2312,6 +2312,7 @@ The repository includes several pre-configured mods in the `mods/` directory:
 - **instanttensor-zero-copy/**: Experimentally avoids InstantTensor's per-tensor ownership clone for model loaders that consume each yielded weight inline; the ring buffer still must fit the largest checkpoint tensor.
 - **exp-b12x/**: Experimental FlashInfer b12x support for builds that include the required upstream vLLM support.
 - **use-official-vllm/**: Installs `git`, `earlyoom`, InstantTensor, and SciPy inside official vLLM containers (Ubuntu/Debian-based) so that other mods can rely on `git apply`, the launcher can use `--earlyoom`, and vLLM can use `--load-format instanttensor` and SciPy-based functionality. The Python install preserves the image's existing Torch build. The mod also redirects the pip-installed NCCL library to the system `libnccl2` library to avoid DGX Spark multi-node NCCL hangs. Apply this mod first when using official vLLM images (e.g. `vllm-openai`).
+- **vllm-audio/**: Installs `soundfile`, `librosa`, and `av` so `/v1/audio/transcriptions` works on the stock `vllm-node` image, which does not ship `vllm[audio]`. Used by the Qwen3-ASR recipe. Idempotent; does not install the `vllm[audio]` extra.
 
 Each mod directory typically contains:
 - Patch files (`.patch`) for code modifications and/or other assets.
