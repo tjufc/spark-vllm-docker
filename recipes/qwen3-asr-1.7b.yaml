@@ -28,7 +28,10 @@ defaults:
   max_num_seqs: 3
 
 # Environment variables
-env: {}
+# Weights are already in the host HF cache. Offline mode stops vLLM from
+# listing hf_quant_config.json on Hugging Face during startup.
+env:
+  HF_HUB_OFFLINE: "1"
 
 # The vLLM serve command template
 command: |
